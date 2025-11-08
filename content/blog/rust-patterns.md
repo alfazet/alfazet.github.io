@@ -3,9 +3,9 @@ title = "Rust is all about patterns"
 date = 2025-11-08
 +++
 
-Everyone who is at least a bit familiar with Rust knows about `match` and how it `match`es the given value against patterns.
+Everyone who is at least a bit familiar with Rust knows about the `match` statement and how it matches the given value against patterns.
 
-Here's a simple example of this statement in action:
+Here's a simple example of it:
 ```rust
 let n = 14;
 match n {
@@ -16,7 +16,7 @@ match n {
     _ => println!("n is some other number"),
 }
 ```
-Now, this example would be perfectly doable in any programming language with a couple of `if`s. At worst it'd just look less pleasing.
+Now, writing such code is possible in any programming language just by using a couple of `if` statements. At worst it would just look less concise.
 
 However, Rust's pattern matching is much more powerful than that. Namely, it allows us to reason about *the shape of data*, not only its value. And that is an
 immensly powerful concept that permeates through the language.
@@ -74,8 +74,8 @@ struct SurfaceParams {
     // and more
 }
 ```
-Now let's pass those `SurfaceParams` to a rendering function. Our first instinct is to pass a reference to the entire struct.
-But then using individual parameters inside the function becomes quite clunky.
+Now let's pass `SurfaceParams` to a rendering function. Our first instinct is to pass a reference to the entire struct.
+But then using individual parameters inside the function will become quite verbose.
 ```rust
 fn render(surf_params: &SurfaceParams) {
     // ...
@@ -84,7 +84,7 @@ fn render(surf_params: &SurfaceParams) {
     // ...
 }
 ```
-To not have to write the `surf_params` prefix constantly, we could take it each parameter as a separate variable. But that isn't an approach that scales well.
+To avoid constantly writing the `surf_params` prefix, we could pass each parameter as a separate variable. But that isn't an approach that scales well.
 
 Instead, let's use the fact that *function parameters are patterns too*.
 ```rust
@@ -99,4 +99,4 @@ every time we want to reference a parameter. I learned about this syntax only re
 
 As you might expect, this isn't all there is to pattern matching in Rust.
 For the curious, an in-depth explanation is available [here](https://doc.rust-lang.org/book/ch19-01-all-the-places-for-patterns.html). It really is a powerful
-feature of Rust that often goes unnoticed.
+feature of the language that often goes unnoticed.
