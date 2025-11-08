@@ -1,4 +1,4 @@
-base_url = "https://alfazet.xyz"
+base_url = "https://alfazet.github.io"
 compile_sass = false
 minify_html = true
 generate_feeds = true
