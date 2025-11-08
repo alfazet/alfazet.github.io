@@ -1,4 +1,5 @@
 base_url = "https://alfazet.github.io"
+title = "αzet"
 compile_sass = false
 minify_html = true
 generate_feeds = true

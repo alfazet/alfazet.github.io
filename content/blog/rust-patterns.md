@@ -1,38 +1,102 @@
 +++
 title = "Rust is all about patterns"
 date = 2025-11-08
-[extra]
-toc = true
 +++
 
-Mauris viverra dictum ultricies. Vestibulum quis ipsum euismod, facilisis metus sed, varius ipsum. Donec scelerisque lacus libero, eu dignissim sem venenatis at. Nunc a egestas tortor, sed feugiat leo.
+Everyone who is at least a bit familiar with Rust knows about `match` and how it `match`es the given value against patterns.
 
-Mauris viverra dictum ultricies. Vestibulum quis ipsum euismod, facilisis metus sed, varius ipsum. Donec scelerisque lacus libero, eu dignissim sem venenatis at. Nunc a egestas tortor, sed feugiat leo. Vestibulum porta tincidunt tellus, vitae ornare tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed nunc neque, tempor in iaculis non, faucibus et metus. Etiam id nisl ut lorem gravida euismod.
-
-## [The start](#the-start)
-
-Fusce non velit cursus ligula mattis convallis vel at metus. Sed pharetra tellus massa, non elementum eros vulputate non. Suspendisse potenti. Quisque arcu felis, laoreet vel accumsan sit amet, fermentum at nunc. Sed massa quam, auctor in eros quis, porttitor tincidunt orci. Nulla convallis id sapien ornare viverra. Cras nec est lacinia ligula porta tincidunt. Nam a est eget ligula pellentesque posuere. Maecenas quis enim ac risus accumsan scelerisque. Aliquam vitae libero sapien. Etiam convallis, metus nec suscipit condimentum, quam massa congue velit, sit amet sollicitudin nisi tortor a lectus. Cras a arcu enim. Suspendisse hendrerit euismod est ac gravida. Donec vitae elit tristique, suscipit eros at, aliquam augue. In ac faucibus dui. Sed tempor lacus tristique elit sagittis, vitae tempor massa convallis.
-
-## [The middle](#the-middle)
-
-Proin quis velit et eros auctor laoreet. Aenean eget nibh odio. Suspendisse mollis enim pretium, fermentum urna vitae, egestas purus. Donec convallis tincidunt purus, scelerisque fermentum eros sagittis vel. Aliquam ac aliquet risus, tempus iaculis est. Fusce molestie mauris non interdum hendrerit. Curabitur ullamcorper, eros vitae interdum volutpat, lacus magna lacinia turpis, at accumsan dui tortor vel lectus. Aenean risus massa, semper non lectus rutrum, facilisis imperdiet mi. Praesent sed quam quis purus auctor ornare et sed augue. Vestibulum non quam quis ligula luctus placerat sed sit amet erat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Fusce auctor, sem eu volutpat dignissim, turpis nibh malesuada arcu, in consequat elit mauris quis sem. Nam tristique sit amet enim vel accumsan. Sed id nibh commodo, dictum sem id, semper quam.
-
-## [The end](#the-end)
-
-Donec ex lectus, tempus non lacinia quis, pretium non ipsum. Praesent est nunc, rutrum vel tellus eu, tristique laoreet purus. In rutrum orci sit amet ex ornare, sit amet finibus lacus laoreet. Etiam ac facilisis purus, eget porttitor odio. Suspendisse tempus dolor nec risus sodales posuere. Proin dui dui, mollis a consectetur molestie, lobortis vitae tellus. Vivamus at purus sed urna sollicitudin mattis. Mauris lacinia libero in lobortis pulvinar. Nullam sit amet condimentum justo. Donec orci justo, pharetra ut dolor non, interdum finibus orci. Proin vitae ante a dui sodales commodo ac id elit. Nunc vel accumsan nunc, sit amet congue nunc. Aliquam in lacinia velit. Integer lobortis luctus eros, in fermentum metus aliquet a. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-
-Some code:
+Here's a simple example of this statement in action:
 ```rust
-let x = 5;
-if let Some(y) = option {
-    println!("{}", y);
-}
-
-match x {
-    1 => (),
-    2 => panic!("two"),
-    _ => todo!(),
+let n = 14;
+match n {
+    0 => println!("n is zero"),
+    1..=9 => println!("n is a one-digit number"),
+    10 | 11 | 12 => println!("n is in range [10, 12]"),
+    13..=19 => println!("n ends with `teen`"),
+    _ => println!("n is some other number"),
 }
 ```
+Now, this example would be perfectly doable in any programming language with a couple of `if`s. At worst it'd just look less pleasing.
 
-Some inline code `right here`.
+However, Rust's pattern matching is much more powerful than that. Namely, it allows us to reason about *the shape of data*, not only its value. And that is an
+immensly powerful concept that permeates through the language.
+
+And by "permeates" I really mean it.
+Let's take a look at the humble `let` keyword. It's most often used when declaring variables:
+```rust
+let x = 42;
+let name = "Ferris"
+```
+so you'd think that it works as follows:
+```rust
+let VARIABLE = EXPRESSION
+```
+but you'd be wrong. In reality, the syntax is:
+```rust
+let PATTERN = EXPRESSION
+```
+So even the first Rust keyword you learn is a pattern match under the hood!
+
+Because of it, we don't have to write code like:
+```rust
+let p = (0.0, 2.137, 3.14);
+let x = p.0;
+let y = p.1;
+let z = p.2;
+```
+
+Instead, we can use this snippet which does the same, but in an elegant way.
+```rust
+let p = (0.0, 2.137, 3.14);
+let (x, y, z) = p;
+```
+Let's take a closer look at the last line - we're declaring variables `x`, `y` and `z` by matching `p`
+(which has a form of `(f32, f32, f32)`) against the pattern `(x, y, z)`. Clearly, the first number matches the `x` "slot", the second
+the `y` "slot" and the the `z` "slot" - so we get `x = 0.0`, `y = 2.137` and `z = 3.14`.
+
+The power of pattern matching also makes the following code invalid, since there's no place for the third member
+of `p` in the left-hand side pattern.
+```rust
+let (x, y) = p; // doesn't compile
+```
+
+To finish up, let's check out another example of pattern matching being a handy tool that saves lines of code.
+
+Imagine a 3D rendering engine that renders a simple scene with a light source and one object.
+That object will have a lot of paramaters that describe the way light rays will interact with it - a color, a specular constant, a diffuse constant and more
+(the specifics don't matter here). Let's say these parameters are stored in a stuct like the one here:
+```rust
+struct SurfaceParams {
+    color: Rgb,
+    k_s: f32,
+    k_d: f32,
+    k_a: f32,
+    // and more
+}
+```
+Now let's pass those `SurfaceParams` to a rendering function. Our first instinct is to pass a reference to the entire struct.
+But then using individual parameters inside the function becomes quite clunky.
+```rust
+fn render(surf_params: &SurfaceParams) {
+    // ...
+    let specular = surf_params.k_s * surf_params.color *
+        angle.cos().powf(surf_params.alpha) * light_color;
+    // ...
+}
+```
+To not have to write the `surf_params` prefix constantly, we could take it each parameter as a separate variable. But that isn't an approach that scales well.
+
+Instead, let's use the fact that *function parameters are patterns too*.
+```rust
+fn render(SurfaceParams { color, k_s, k_d, k_a, /* ... */ }: &SurfaceParams) {
+    // ...
+    let specular = k_s * color * angle.cos().powf(alpha) * light_color;
+    // ...
+}
+```
+The number of arguments of our function hasn't exploded *and* we don't need to verbosely name the entire struct
+every time we want to reference a parameter. I learned about this syntax only recently and I wish I had known it sooner, it's so nice!
+
+As you might expect, this isn't all there is to pattern matching in Rust.
+For the curious, an in-depth explanation is available [here](https://doc.rust-lang.org/book/ch19-01-all-the-places-for-patterns.html). It really is a powerful
+feature of Rust that often goes unnoticed.
